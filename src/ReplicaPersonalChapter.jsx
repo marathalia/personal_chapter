@@ -365,60 +365,106 @@ function cloneAccordToDevice(accord) {
 
 function getBlendLabInsights(primary, secondary, tertiary) {
   if (!primary || !secondary || !tertiary) return null;
-  const familyPair = [primary.family, secondary.family].sort().join("|");
   const pairMap = {
+    "floral|floral": { compatibility: 76, mood: "petalled, smooth, airy", result: "A floral-led blend with a soft halo rather than depth.", opening: "petal light", heart: "powdered bloom", drydown: "sheer floral skin" },
+    "floral|fresh": { compatibility: 72, mood: "bright, dewy, airy", result: "A light floral freshness with more lift than body.", opening: "dewy brightness", heart: "petal mist", drydown: "clean floral trace" },
     "floral|musky": { compatibility: 91, mood: "polished, soft, skin-close", result: "A silky floral cloud with a clean musky finish.", opening: "petal brightness", heart: "powdered softness", drydown: "clean skin musk" },
-    "fresh|green": { compatibility: 88, mood: "airy, crisp, botanical", result: "Fresh green clarity with a calm watery lift.", opening: "cool citrus-green air", heart: "leafy transparency", drydown: "clean mineral softness" },
+    "floral|warm": { compatibility: 79, mood: "radiant, dressed-up, smooth", result: "A luminous floral accord sitting on warm amber light.", opening: "bright petals", heart: "golden bloom", drydown: "warm skin sweetness" },
+    "floral|woody": { compatibility: 61, mood: "structured, dry, tailored", result: "The blend feels more architectural than seamless, with floral softness pressed against dry woods.", opening: "cool petal air", heart: "dry floral wood", drydown: "textured woody veil" },
+    "fresh|fresh": { compatibility: 74, mood: "watery, sheer, brisk", result: "A clean fresh pairing that feels bright but not especially deep.", opening: "cool lift", heart: "watery air", drydown: "mineral freshness" },
+    "fresh|musky": { compatibility: 82, mood: "clean, sheer, modern", result: "A polished clean-skin blend with airy freshness.", opening: "watery brightness", heart: "white musk", drydown: "linen-soft skin" },
+    "fresh|warm": { compatibility: 55, mood: "bright, contrasting, unsettled", result: "A sparkly-cool opening sits against warmth in a way that feels intentionally contrasty.", opening: "citrus lift", heart: "split warm-cool tension", drydown: "soft amber" },
+    "fresh|woody": { compatibility: 64, mood: "crisp, dry, directional", result: "A brisk opening anchored by dry woods; refined, but not naturally fluid.", opening: "citrus-wood air", heart: "dry cedar line", drydown: "clean woody skin" },
+    "musky|musky": { compatibility: 88, mood: "intimate, creamy, diffused", result: "A smooth skin-scent build that feels naturally cohesive.", opening: "soft skin light", heart: "cashmere musk", drydown: "close warm skin" },
     "musky|warm": { compatibility: 93, mood: "intimate, creamy, addictive", result: "Warm skin musk with a richer, enveloping trail.", opening: "soft warmth", heart: "cashmere texture", drydown: "ambered skin" },
-    "fresh|warm": { compatibility: 74, mood: "bright, lifted, contrasting", result: "A sparkling opening over a warmer, smoother base.", opening: "citrus lift", heart: "clean warmth", drydown: "soft amber" },
-    "green|warm": { compatibility: 82, mood: "sunlit, grounded, textured", result: "Green freshness rounded by warm resin and skin heat.", opening: "fresh fig-green light", heart: "creamy warmth", drydown: "grounded amber woods" },
     "musky|woody": { compatibility: 89, mood: "quiet, elegant, lingering", result: "Smooth woods wrapped in a close-to-skin musky veil.", opening: "dry softness", heart: "cashmere wood", drydown: "soft cedar musk" },
-    "floral|warm": { compatibility: 84, mood: "radiant, dressed-up, smooth", result: "A luminous floral accord sitting on warm amber light.", opening: "bright petals", heart: "golden bloom", drydown: "warm skin sweetness" },
-    "fresh|musky": { compatibility: 86, mood: "clean, sheer, modern", result: "A polished clean-skin blend with airy freshness.", opening: "watery brightness", heart: "white musk", drydown: "linen-soft skin" },
-    "green|woody": { compatibility: 87, mood: "natural, calm, architectural", result: "Botanical lift anchored by dry, elegant woods.", opening: "leafy clarity", heart: "cedar structure", drydown: "smooth woody skin" },
+    "warm|warm": { compatibility: 84, mood: "dense, rich, cocooning", result: "A warm-on-warm pairing that feels plush and enveloping.", opening: "amber glow", heart: "resin warmth", drydown: "deep skin warmth" },
     "warm|woody": { compatibility: 90, mood: "rich, grounded, luxurious", result: "A fuller-bodied blend with warm woods and lingering depth.", opening: "resin warmth", heart: "polished wood", drydown: "deep amber cedar" },
+    "woody|woody": { compatibility: 82, mood: "dry, grounded, refined", result: "A woody-led composition with calm structure and a quieter trail.", opening: "dry grain", heart: "cedar structure", drydown: "smooth woods" },
   };
-  const reversePair = familyPair;
-  const base = pairMap[reversePair] || { compatibility: 80, mood: "balanced, smooth, layered", result: "A layered composition with a smooth transition from top to base.", opening: "lift", heart: "texture", drydown: "soft trail" };
+  const getPairInsight = (firstFamily, secondFamily) =>
+    pairMap[[firstFamily, secondFamily].sort().join("|")] || {
+      compatibility: 66,
+      mood: "layered, mixed, directional",
+      result: "The two accords can work together, but the bridge between them is less instinctive.",
+      opening: "lift",
+      heart: "texture",
+      drydown: "soft trail",
+    };
+
+  const pairInsights = [
+    getPairInsight(primary.family, secondary.family),
+    getPairInsight(primary.family, tertiary.family),
+    getPairInsight(secondary.family, tertiary.family),
+  ];
+
+  const strongestPair = [...pairInsights].sort((a, b) => b.compatibility - a.compatibility)[0];
+  const pairAverage = Math.round(pairInsights.reduce((sum, insight) => sum + insight.compatibility, 0) / pairInsights.length);
   const tertiaryFamilyMap = {
     warm: { mood: "warmer and more enveloping", note: "amber glow" },
     fresh: { mood: "brighter and more lifted", note: "fresh air" },
-    green: { mood: "more botanical and natural", note: "green texture" },
     woody: { mood: "deeper and more structured", note: "dry woods" },
     floral: { mood: "more expressive and polished", note: "petal softness" },
     musky: { mood: "closer to skin and smoother", note: "skin musk" },
   };
   const tertiaryAdjust = tertiaryFamilyMap[tertiary.family] || { mood: "more layered", note: tertiary.notes.split("·")[0]?.trim() || tertiary.name.toLowerCase() };
   const families = [primary.family, secondary.family, tertiary.family];
-  const uniqueFamilies = new Set(families).size;
-  const warmCount = families.filter((family) => family === "warm").length;
-  const freshishCount = families.filter((family) => family === "fresh" || family === "green").length;
-  const airyPenalty = warmCount > 1 && freshishCount > 0 ? 6 : 0;
-  const contrastPenalty = uniqueFamilies === 3 ? 4 : 0;
-  const duplicateBonus = uniqueFamilies === 1 ? 6 : uniqueFamilies === 2 ? 2 : 0;
-  const accordFit = Math.max(58, Math.min(96, Math.round(base.compatibility + duplicateBonus - airyPenalty - contrastPenalty)));
+  const familyCounts = families.reduce((acc, family) => {
+    acc[family] = (acc[family] || 0) + 1;
+    return acc;
+  }, {});
+  const uniqueFamilies = Object.keys(familyCounts).length;
+  const warmCount = familyCounts.warm || 0;
+  const freshCount = familyCounts.fresh || 0;
+  const muskyCount = familyCounts.musky || 0;
+  const woodyCount = familyCounts.woody || 0;
+  const floralCount = familyCounts.floral || 0;
+
+  let harmonyBonus = 0;
+  let contrastPenalty = 0;
+
+  if (warmCount >= 1 && muskyCount >= 1) harmonyBonus += 9;
+  if (woodyCount >= 1 && muskyCount >= 1) harmonyBonus += 8;
+  if (warmCount >= 1 && woodyCount >= 1) harmonyBonus += 7;
+  if (freshCount >= 1 && muskyCount >= 1) harmonyBonus += 4;
+  if (freshCount >= 1 && floralCount >= 1) harmonyBonus += 3;
+  if (uniqueFamilies === 1) harmonyBonus += 4;
+  if (uniqueFamilies === 2) harmonyBonus += 2;
+
+  if (warmCount >= 1 && freshCount >= 1) contrastPenalty += 11;
+  if (warmCount >= 2 && freshCount >= 1) contrastPenalty += 7;
+  if (floralCount >= 1 && woodyCount >= 1 && muskyCount === 0 && warmCount === 0) contrastPenalty += 9;
+  if (freshCount >= 1 && woodyCount >= 1 && muskyCount === 0) contrastPenalty += 6;
+  if (uniqueFamilies === 3) contrastPenalty += 6;
+  if (families.includes("fresh") && families.includes("warm") && families.includes("woody")) contrastPenalty += 8;
+  if (families.includes("fresh") && families.includes("warm") && families.includes("floral")) contrastPenalty += 5;
+
+  const accordFit = Math.max(44, Math.min(96, Math.round(pairAverage + harmonyBonus - contrastPenalty)));
   const profileWeighted = Math.round((primary.match + secondary.match + tertiary.match) / 3);
-  const yourFit = Math.max(61, Math.min(97, Math.round(profileWeighted - Math.max(0, uniqueFamilies - 2) * 3 - airyPenalty / 2)));
+  const fitLift = accordFit >= 88 ? 5 : accordFit >= 78 ? 2 : accordFit >= 68 ? 0 : -5;
+  const yourFit = Math.max(41, Math.min(97, Math.round(profileWeighted + fitLift - Math.max(0, uniqueFamilies - 2) * 4 - contrastPenalty / 3)));
 
   const accordTone =
-    accordFit >= 90 ? "The three accords blend very naturally, with almost no friction between the note families."
-    : accordFit >= 80 ? "The blend structure is smooth overall, with a little contrast that keeps it interesting."
-    : accordFit >= 70 ? "The accord mix is more experimental: some parts click beautifully, others feel intentionally contrasting."
-    : "This combination is more challenging. It creates tension rather than an effortless blend.";
+    accordFit >= 90 ? "These three accords lock together beautifully. The structure feels natural from opening to dry-down."
+    : accordFit >= 80 ? "The blend feels convincing overall. There is still some contrast, but it reads as intentional."
+    : accordFit >= 68 ? "This trio has a clear idea, but not every note resolves cleanly. It feels more experimental than seamless."
+    : accordFit >= 56 ? "Some parts work, but the trio keeps pulling in different directions. It feels noticeably less resolved."
+    : "This combination is a poor match as a blend. The note families compete more than they connect.";
 
   const yourTone =
-    yourFit >= 90 ? "This trio also suits your current profile extremely well."
-    : yourFit >= 80 ? "This trio fits your profile well, even if it is not your easiest match."
-    : yourFit >= 70 ? "This trio is wearable for you, but it leans slightly away from your strongest profile direction."
-    : "This trio is a weak fit for your profile, even if the accords themselves are interesting together.";
+    yourFit >= 90 ? "This trio also aligns extremely well with your current profile."
+    : yourFit >= 80 ? "This trio suits your profile well, even if it is not your easiest match."
+    : yourFit >= 68 ? "This trio can still work for you, but it is drifting away from your strongest profile direction."
+    : yourFit >= 56 ? "This trio is a weak skin fit for you, even if one or two notes still feel right."
+    : "Your profile and this trio are pulling in different directions. It is a poor skin fit.";
 
   return {
-    ...base,
+    ...strongestPair,
     accordFit,
     yourFit,
     title: `${primary.name} · ${secondary.name} · ${tertiary.name}`,
-    mood: `${base.mood}, ${tertiaryAdjust.mood}`,
-    result: `${base.result} The third note adds ${tertiaryAdjust.note}.`,
+    mood: `${strongestPair.mood}, ${tertiaryAdjust.mood}`,
+    result: `${strongestPair.result} The third note adds ${tertiaryAdjust.note}.`,
     accordTone,
     yourTone,
   };
@@ -2151,7 +2197,7 @@ function ProfileScreen({ hasSkinID, hasProfileInput, onOpenStores, onStartProfil
               </div>
               <p style={{ fontFamily: sans, fontSize: 12, color: P.charcoal, margin: 0, lineHeight: 1.65 }}>
                 {hasSkinID
-                  ? "Your Scent ID is permanent, but your fragrance evolves. Seasonal shifts subtly change how your accords perform. Your Personal Chapter grows with you."
+                  ? "Your Scent ID keeps evolving as your skin, routine, and environment shift. Seasonal changes subtly affect how your accords perform. Your Personal Chapter grows with you."
                   : "Your Scent Profile evolves as you add more memories. Each one refines your fragrance directions. Your chapter is always being written."
                 }
               </p>
@@ -2580,10 +2626,59 @@ export default function ReplicaApp() {
       <style>{`
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         ::-webkit-scrollbar { display: none; }
+        .app-shell {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          min-height: 100dvh;
+          background: #1a1816;
+          padding: 20px;
+          font-family: ${sans};
+        }
+        .app-frame {
+          width: 390px;
+          height: 844px;
+          border-radius: 48px;
+          background: ${P.ivory};
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 30px 90px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,0,0,0.06);
+        }
+        .app-notch {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 126px;
+          height: 34px;
+          background: #000;
+          border-bottom-left-radius: 20px;
+          border-bottom-right-radius: 20px;
+          z-index: 50;
+        }
+        @media (max-width: 520px) {
+          .app-shell {
+            padding: 8px;
+            align-items: center;
+            background: #1a1816;
+          }
+          .app-frame {
+            width: min(390px, calc(100vw - 16px), calc((100dvh - 16px) * 390 / 844));
+            height: auto;
+            max-height: calc(100dvh - 16px);
+            aspect-ratio: 390 / 844;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.38), inset 0 0 0 1px rgba(0,0,0,0.05);
+          }
+          .app-notch {
+            width: 132px;
+          }
+        }
       `}</style>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: "#1a1816", padding: 20, fontFamily: sans }}>
-        <div style={{ width: 390, height: 844, borderRadius: 48, background: P.ivory, position: "relative", overflow: "hidden", boxShadow: "0 30px 90px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,0,0,0.06)" }}>
-          <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 126, height: 34, background: "#000", borderBottomLeftRadius: 20, borderBottomRightRadius: 20, zIndex: 50 }}/>
+      <div className="app-shell">
+        <div className="app-frame">
+          <div className="app-notch" />
           <Toast message={toast} />
           <PairingSheet
             open={pairingSheetOpen}
