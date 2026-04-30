@@ -8,5 +8,8 @@ body,
 
 body {
   min-width: 320px;
-  background: #1a1816;
+  background: #17130f;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
 }
