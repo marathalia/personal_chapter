@@ -89,7 +89,7 @@ export function Sheet({ title, subtitle, children, onClose }) {
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: 115, background: POPUP.overlay, display: "flex", alignItems: "flex-end" }} onClick={onClose}>
       <div style={popupSheetSurfaceStyle} onClick={e => e.stopPropagation()}>
-        <div style={popupHeaderStyle}>
+        <div className="ratio-assistant-header" style={popupHeaderStyle}>
           <div style={popupGridStyle} />
           <div style={popupHandleStyle} />
           <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>

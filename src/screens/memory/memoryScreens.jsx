@@ -245,9 +245,9 @@ export function MemoryDetailScreen({ memory, accordLibrary, hasSkinID, onBack, o
     };
   });
   const stageDefinitions = [
-    { id: "top", title: "Opening lift", label: "Hero", subtitle: "The first impression", families: ["fresh-citrus", "fresh-green"] },
-    { id: "heart", title: "Emotional heart", label: "Support", subtitle: "The part that carries the memory", families: ["floral", "gourmand", "warm-spice"] },
-    { id: "base", title: "Lasting base", label: "Anchor", subtitle: "What stays closest to skin", families: ["amber-oriental", "earthy-musk", "woody"] },
+    { id: "top", title: "Opening lift", label: "Top", subtitle: "The first impression", families: ["fresh-citrus", "fresh-green"] },
+    { id: "heart", title: "Emotional heart", label: "Heart", subtitle: "The part that carries the memory", families: ["floral", "gourmand", "warm-spice"] },
+    { id: "base", title: "Lasting base", label: "Base", subtitle: "What stays closest to skin", families: ["amber-oriental", "earthy-musk", "woody"] },
   ];
   const accordGroups = stageDefinitions.map((group, groupIndex) => {
     const grouped = scoredAccords.filter(({ accord }) => group.families.includes(accord.family));

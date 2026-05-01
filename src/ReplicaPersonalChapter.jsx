@@ -254,7 +254,7 @@ export default function ReplicaApp() {
   return (
     <>
       <style>{`
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; }
         ::-webkit-scrollbar { display: none; }
         .app-shell {
           display: flex;
@@ -345,15 +345,31 @@ export default function ReplicaApp() {
           .app-status-bar {
             display: none !important;
           }
+          .ratio-assistant-overlay {
+            align-items: stretch !important;
+            background: rgba(0,0,0,0.52) !important;
+          }
           .ratio-assistant-surface {
-            height: min(680px, calc(100svh - 84px)) !important;
-            max-height: calc(100svh - 84px) !important;
+            width: 100vw !important;
+            height: 100svh !important;
+            max-height: 100svh !important;
+            border-radius: 0 !important;
+            border-top-left-radius: 0 !important;
+            border-top-right-radius: 0 !important;
+          }
+          .ratio-assistant-header {
+            border-top-left-radius: 0 !important;
+            border-top-right-radius: 0 !important;
+            padding-top: calc(14px + env(safe-area-inset-top)) !important;
           }
           .ratio-assistant-body {
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
-            padding-bottom: calc(18px + env(safe-area-inset-bottom)) !important;
+            padding: 16px 18px calc(96px + env(safe-area-inset-bottom)) !important;
+          }
+          .ratio-assistant-body [style*="grid-template-columns: repeat(4"] {
+            gap: 7px !important;
           }
         }
       `}</style>

@@ -108,8 +108,6 @@ export function HomeScreen({
     if (!liveMap.length) return null;
     return [...liveMap].sort((a, b) => b.ratio - a.ratio)[0] || null;
   }, [liveMap]);
-  const stageLabel = { Top: "Hero", Heart: "Support", Base: "Anchor" };
-
   return (
     <div style={{ padding: "0 24px", paddingTop: 16, paddingBottom: 96, overflowY: "auto", height: "100%", background: "#F7F7F7", color: "#1D1D1F" }}>
       <FadeIn>
@@ -257,7 +255,7 @@ export function HomeScreen({
                     </p>
                     <p style={{ ...T.caption, fontSize: 10, color: "#8A8A8E", margin: "2px 0 0" }}>
                       {cart.level}% left
-                      {layer ? ` · ${stageLabel[layer.tier] || layer.tier} · ${layer.time}` : ""}
+                      {layer ? ` · ${layer.tier} · ${layer.time}` : ""}
                     </p>
                     {layer?.effect && (
                       <p style={{ ...T.caption, fontSize: 10, color: "#8A8A8E", margin: "2px 0 0" }}>
