@@ -4,7 +4,7 @@ import { getLiveOlfactiveMap } from "../../logic/scent.js";
 
 export function StatusBar() {
   return (
-    <div style={{ height: 48, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
+    <div className="app-status-bar" style={{ height: 48, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
       <span style={{ ...T.status, color: P.charcoal }}>9:41</span>
       <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
         <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="3" width="3" height="8" rx=".5" fill={P.charcoal}/><rect x="4" y="2" width="3" height="9" rx=".5" fill={P.charcoal}/><rect x="8" y="0" width="3" height="11" rx=".5" fill={P.charcoal}/><rect x="12" y="0" width="3" height="11" rx=".5" fill={P.charcoal} opacity=".3"/></svg>

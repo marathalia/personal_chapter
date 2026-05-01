@@ -200,8 +200,8 @@ export default function ReplicaApp() {
   const handleCompleteDecode = () => {
     setHasSkinID(true);
     setStoreLocatorOpen(false);
-    setActiveTab("home");
-    setToast("Decode completed. Skin profile added to Home.");
+    setActiveTab("profile");
+    setToast("Decode completed. Skin profile unlocked.");
   };
 
   const handleOpenProgressStep = (stepId) => {
@@ -325,16 +325,15 @@ export default function ReplicaApp() {
           .app-shell {
             display: block;
             width: 100vw;
-            min-height: 100vh;
-            min-height: 100dvh;
+            min-height: 100svh;
+            height: 100svh;
             padding: 0;
             background: #F7F7F7;
             overflow: hidden;
           }
           .app-frame {
             width: 100vw;
-            height: 100vh;
-            height: 100dvh;
+            height: 100svh;
             max-height: none;
             aspect-ratio: auto;
             border-radius: 0;
@@ -342,6 +341,19 @@ export default function ReplicaApp() {
           }
           .app-notch {
             display: none;
+          }
+          .app-status-bar {
+            display: none !important;
+          }
+          .ratio-assistant-surface {
+            height: min(680px, calc(100svh - 84px)) !important;
+            max-height: calc(100svh - 84px) !important;
+          }
+          .ratio-assistant-body {
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding-bottom: calc(18px + env(safe-area-inset-bottom)) !important;
           }
         }
       `}</style>

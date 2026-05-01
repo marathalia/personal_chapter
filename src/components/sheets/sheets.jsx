@@ -354,8 +354,9 @@ export function RatioAssistantSheet({ open, carts, hasProfileInput, hasSkinID, o
   };
 
   return (
-    <div style={{ position: "absolute", inset: 0, zIndex: 175, background: POPUP.overlay, display: "flex", alignItems: "flex-end" }} onClick={onClose}>
+    <div className="ratio-assistant-overlay" style={{ position: "absolute", inset: 0, zIndex: 175, background: POPUP.overlay, display: "flex", alignItems: "flex-end" }} onClick={onClose}>
       <div
+        className="ratio-assistant-surface"
         style={{
           ...popupSheetSurfaceStyle,
           height: "calc(100% - 180px)",
@@ -383,7 +384,7 @@ export function RatioAssistantSheet({ open, carts, hasProfileInput, hasSkinID, o
           </div>
         </div>
 
-        <div style={{ ...popupBodyStyle, flex: 1, minHeight: 0, padding: hasRecommendation ? "16px 18px 20px" : "16px 18px 20px", display: "grid", gap: hasRecommendation ? 12 : 10, alignContent: "start", overflowY: "hidden" }}>
+        <div className="ratio-assistant-body" style={{ ...popupBodyStyle, flex: 1, minHeight: 0, padding: hasRecommendation ? "16px 18px 20px" : "16px 18px 20px", display: "grid", gap: hasRecommendation ? 12 : 10, alignContent: "start", overflowY: "hidden" }}>
           {!hasRecommendation && (
           <div style={{ padding: "13px 15px", borderRadius: 18, background: POPUP.panel, border: `1px solid ${POPUP.line}`, boxShadow: "0 10px 18px rgba(17,17,17,0.04)" }}>
             <p style={{ ...T.caption, fontSize: 13, color: P.charcoal, margin: 0, lineHeight: 1.36 }}>
