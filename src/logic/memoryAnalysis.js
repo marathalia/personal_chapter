@@ -39,6 +39,33 @@ export function getMemoryRecommendedAccords(memory, accordLibrary) {
     .slice(0, 8);
 }
 
+export function getMemoryLayerBlendCarts(memory, baseCarts, accordLibrary) {
+  if (!memory) return baseCarts;
+
+  const scoredAccords = getMemoryRecommendedAccords(memory, accordLibrary)
+    .map((accord, index) => {
+      const loadedCart = baseCarts.find((cart) => cart.name === accord.name);
+      const skinFit = memory.fitScores?.[accord.name]?.skin ?? accord.match;
+      return {
+        ...accord,
+        level: loadedCart?.level ?? Math.max(42, Math.min(92, skinFit - index * 3)),
+        skinFit,
+      };
+    })
+    .sort((a, b) => b.skinFit - a.skinFit);
+
+  const layerBest = ["Top", "Heart", "Base"]
+    .map((layer) => scoredAccords.find((accord) => accord.layer === layer))
+    .filter(Boolean);
+
+  const blendCarts = [
+    ...layerBest,
+    ...scoredAccords.filter((accord) => !layerBest.some((picked) => picked.name === accord.name)),
+  ].slice(0, 3);
+
+  return blendCarts.length === 3 ? blendCarts : baseCarts;
+}
+
 export function getReplicaMemoryWearAnalysis(memory, hasSkinID) {
   const [opening, heart, drydown] = (memory.breakdown || []).slice(0, 3);
   const profileLabel = hasSkinID ? "skin ID" : "current profile";

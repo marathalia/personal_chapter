@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import { T, sans, mono } from "../../theme.js";
-import { ACCORD_LIBRARY } from "../../data/catalog.js";
-import { getLiveOlfactiveMap, getMemoryArchiveBackground, getMemoryRecommendedAccords } from "../../logic/scent.js";
-import { BatteryBadge, FadeIn, LayeringDeviceFigure, ProductDeviceImage, StoreAccessCard } from "../../components/appComponents.jsx";
+import { getLiveOlfactiveMap, getMemoryArchiveBackground } from "../../logic/scent.js";
+import { BatteryBadge, FadeIn, ProductDeviceImage, StoreAccessCard } from "../../components/appComponents.jsx";
 
 export function HomeScreen({
   hasSkinID,
   carts,
+  blendCarts = carts,
   ratios,
   connected,
   batteryLevel,
@@ -35,33 +35,6 @@ export function HomeScreen({
     { label: "Sebum", value: "Medium", sub: "Balanced" },
     { label: "Microbiome", value: "B+", sub: "Amber-friendly" },
   ];
-  const blendCarts = useMemo(() => {
-    if (!primaryMemory) return carts;
-
-    const scoredAccords = getMemoryRecommendedAccords(primaryMemory, ACCORD_LIBRARY)
-      .map((accord, index) => {
-        const loadedCart = carts.find((cart) => cart.name === accord.name);
-        const skinFit = primaryMemory.fitScores?.[accord.name]?.skin ?? accord.match;
-        return {
-          ...accord,
-          level: loadedCart?.level ?? Math.max(42, Math.min(92, skinFit - index * 3)),
-          skinFit,
-        };
-      })
-      .sort((a, b) => b.skinFit - a.skinFit);
-
-    const layerBest = ["Top", "Heart", "Base"]
-      .map((layer) => scoredAccords.find((accord) => accord.layer === layer))
-      .filter(Boolean);
-
-    const skinFitCarts = [
-      ...layerBest,
-      ...scoredAccords.filter((accord) => !layerBest.some((picked) => picked.name === accord.name)),
-    ].slice(0, 3);
-
-    return skinFitCarts.length === 3 ? skinFitCarts : carts;
-  }, [carts, primaryMemory]);
-
   const handleDeviceAction = () => {
     if (connected) {
       onOpenRatioAssistant();
@@ -86,7 +59,7 @@ export function HomeScreen({
         <div style={{ height: "100%", display: "flex", gap: 6 }}>
           {blendCarts.map((cart, index) => {
             const isFirst = index === 0;
-            const isLast = index === carts.length - 1;
+            const isLast = index === blendCarts.length - 1;
             return (
               <div
                 key={cart.name}

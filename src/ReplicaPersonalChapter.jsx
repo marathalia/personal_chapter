@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { P, sans, serif } from "./theme.js";
 import { ACCORD_LIBRARY, DUMMY_UPLOAD_MEMORIES, MEMORY_PROMPTS } from "./data/catalog.js";
-import { getAccordPreview, getMemoryIcon } from "./logic/scent.js";
+import { getAccordPreview, getMemoryIcon, getMemoryLayerBlendCarts } from "./logic/scent.js";
 import { MemoryComposerSheet, PairingSheet, Sheet, StatusBar, TabBar, Toast, RatioAssistantSheet } from "./components/appComponents.jsx";
 import { ExploreScreen, HomeScreen, MemoryDetailScreen, MemoryEntryScreen, MemoryScreen, OnboardingScreen, ProfileScreen, SplashScreen, StoreLocatorScreen } from "./screens/appScreens.jsx";
 
@@ -68,6 +68,10 @@ export default function ReplicaApp() {
       cta: connected ? "Open device" : "Pair device",
     },
   ];
+  const currentBlendCarts = useMemo(
+    () => getMemoryLayerBlendCarts(memories[0], deviceCarts, ACCORD_LIBRARY),
+    [deviceCarts, memories]
+  );
 
   const switchTab = (tab) => {
     if (tab === "create") {
@@ -233,11 +237,11 @@ export default function ReplicaApp() {
 
   const renderMain = () => {
     switch (activeTab) {
-      case "home": return <HomeScreen hasSkinID={hasSkinID} carts={deviceCarts} ratios={ratios} connected={connected} batteryLevel={batteryLevel} onRequestPairing={openPairingSheet} onAdjustRatio={handleAdjustRatio} onSprayBlend={handleSprayBlend} onOpenRatioAssistant={() => setRatioAssistantOpen(true)} onOpenStores={openStoreLocator} memories={memories} setupSteps={setupSteps} onOpenProgressStep={handleOpenProgressStep} onOpenMemoryDetail={handleOpenMemoryDetail} onOpenProfile={() => switchTab("profile")} />;
+      case "home": return <HomeScreen hasSkinID={hasSkinID} carts={deviceCarts} blendCarts={currentBlendCarts} ratios={ratios} connected={connected} batteryLevel={batteryLevel} onRequestPairing={openPairingSheet} onAdjustRatio={handleAdjustRatio} onSprayBlend={handleSprayBlend} onOpenRatioAssistant={() => setRatioAssistantOpen(true)} onOpenStores={openStoreLocator} memories={memories} setupSteps={setupSteps} onOpenProgressStep={handleOpenProgressStep} onOpenMemoryDetail={handleOpenMemoryDetail} onOpenProfile={() => switchTab("profile")} />;
       case "memory": return <MemoryScreen memories={memories} memoryPrompts={MEMORY_PROMPTS} accordLibrary={ACCORD_LIBRARY} onOpenMemoryComposer={openMemoryComposer} onOpenMemoryDetail={handleOpenMemoryDetail} />;
       case "explore": return <ExploreScreen hasSkinID={hasSkinID} hasProfileInput={hasProfileInput} accords={ACCORD_LIBRARY} onPreviewAccord={handlePreviewAccord} onModalChange={setExploreModalOpen} initialMode={exploreInitialMode} initialLabNames={labSeedNames} />;
       case "profile": return <ProfileScreen hasSkinID={hasSkinID} hasProfileInput={hasProfileInput} memories={memories} onOpenStores={openStoreLocator} onStartProfile={startMemoryProfile} />;
-      default: return <HomeScreen hasSkinID={hasSkinID} carts={deviceCarts} ratios={ratios} connected={connected} batteryLevel={batteryLevel} onRequestPairing={openPairingSheet} onAdjustRatio={handleAdjustRatio} onSprayBlend={handleSprayBlend} onOpenRatioAssistant={() => setRatioAssistantOpen(true)} onOpenStores={openStoreLocator} memories={memories} setupSteps={setupSteps} onOpenProgressStep={handleOpenProgressStep} onOpenMemoryDetail={handleOpenMemoryDetail} onOpenProfile={() => switchTab("profile")} />;
+      default: return <HomeScreen hasSkinID={hasSkinID} carts={deviceCarts} blendCarts={currentBlendCarts} ratios={ratios} connected={connected} batteryLevel={batteryLevel} onRequestPairing={openPairingSheet} onAdjustRatio={handleAdjustRatio} onSprayBlend={handleSprayBlend} onOpenRatioAssistant={() => setRatioAssistantOpen(true)} onOpenStores={openStoreLocator} memories={memories} setupSteps={setupSteps} onOpenProgressStep={handleOpenProgressStep} onOpenMemoryDetail={handleOpenMemoryDetail} onOpenProfile={() => switchTab("profile")} />;
     }
   };
 
@@ -385,7 +389,7 @@ export default function ReplicaApp() {
           />
           <RatioAssistantSheet
             open={ratioAssistantOpen}
-            carts={deviceCarts}
+            carts={currentBlendCarts}
             hasProfileInput={hasProfileInput}
             hasSkinID={hasSkinID}
             onClose={() => setRatioAssistantOpen(false)}
