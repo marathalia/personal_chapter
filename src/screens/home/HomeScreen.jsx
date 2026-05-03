@@ -166,7 +166,7 @@ export function HomeScreen({
     <div style={{ padding: "0 24px", paddingTop: 16, paddingBottom: 96, overflowY: "auto", height: "100%", background: "#F7F7F7", color: "#1D1D1F" }}>
       <FadeIn>
         <header style={{ marginTop: 0, marginBottom: 14 }}>
-          <h1 style={{ ...T.pageTitle, color: "#1D1D1F", margin: 0 }}>Good morning, Maria</h1>
+          <h1 style={{ ...T.pageTitle, color: "#1D1D1F", margin: 0 }}>Good morning, Mia</h1>
         </header>
       </FadeIn>
 
