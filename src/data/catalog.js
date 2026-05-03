@@ -91,7 +91,7 @@ export const DUMMY_UPLOAD_MEMORIES = [
     fitScores: {
       "Green Mandarin": { memory: 95, skin: 88 },
       "Fig & Leaf": { memory: 93, skin: 90 },
-      "White Floral": { memory: 90, skin: 94 },
+      "White Floral": { memory: 94, skin: 94 },
       "Clean Skin Musk": { memory: 87, skin: 96 },
       "Bergamot Bright": { memory: 88, skin: 85 },
       "Garden Rain": { memory: 84, skin: 82 },
