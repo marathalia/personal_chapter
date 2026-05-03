@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { T, sans, mono } from "../../theme.js";
-import { getLiveOlfactiveMap, getMemoryArchiveBackground } from "../../logic/scent.js";
+import { ACCORD_LIBRARY } from "../../data/catalog.js";
+import { getLiveOlfactiveMap, getMemoryArchiveBackground, getMemoryRecommendedAccords } from "../../logic/scent.js";
 import { BatteryBadge, FadeIn, LayeringDeviceFigure, ProductDeviceImage, StoreAccessCard } from "../../components/appComponents.jsx";
 
 export function HomeScreen({
@@ -17,6 +18,7 @@ export function HomeScreen({
   memories,
   setupSteps,
   onOpenProgressStep,
+  onOpenMemoryDetail,
   onOpenProfile,
 }) {
   const primaryMemory = memories[0];
@@ -33,6 +35,32 @@ export function HomeScreen({
     { label: "Sebum", value: "Medium", sub: "Balanced" },
     { label: "Microbiome", value: "B+", sub: "Amber-friendly" },
   ];
+  const blendCarts = useMemo(() => {
+    if (!primaryMemory) return carts;
+
+    const scoredAccords = getMemoryRecommendedAccords(primaryMemory, ACCORD_LIBRARY)
+      .map((accord, index) => {
+        const loadedCart = carts.find((cart) => cart.name === accord.name);
+        const skinFit = primaryMemory.fitScores?.[accord.name]?.skin ?? accord.match;
+        return {
+          ...accord,
+          level: loadedCart?.level ?? Math.max(42, Math.min(92, skinFit - index * 3)),
+          skinFit,
+        };
+      })
+      .sort((a, b) => b.skinFit - a.skinFit);
+
+    const layerBest = ["Top", "Heart", "Base"]
+      .map((layer) => scoredAccords.find((accord) => accord.layer === layer))
+      .filter(Boolean);
+
+    const skinFitCarts = [
+      ...layerBest,
+      ...scoredAccords.filter((accord) => !layerBest.some((picked) => picked.name === accord.name)),
+    ].slice(0, 3);
+
+    return skinFitCarts.length === 3 ? skinFitCarts : carts;
+  }, [carts, primaryMemory]);
 
   const handleDeviceAction = () => {
     if (connected) {
@@ -42,8 +70,8 @@ export function HomeScreen({
     onRequestPairing();
   };
 
-  const Card = ({ children, style = {} }) => (
-    <section style={{ borderRadius: 18, background: "rgba(255,255,255,0.86)", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 6px 18px rgba(0,0,0,0.04)", overflow: "hidden", ...style }}>
+  const Card = ({ children, style = {}, ...props }) => (
+    <section {...props} style={{ borderRadius: 18, background: "rgba(255,255,255,0.86)", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 6px 18px rgba(0,0,0,0.04)", overflow: "hidden", ...style }}>
       {children}
     </section>
   );
@@ -51,6 +79,32 @@ export function HomeScreen({
   const DeviceBottle = ({ compact = false }) => (
     <ProductDeviceImage width={compact ? 42 : 82} height={compact ? 54 : 112} glowColor="rgba(183,138,50,0.16)" compact={compact} />
   );
+
+  const BlendRatioSquare = () => {
+    return (
+      <div style={{ width: 96, height: 96, borderRadius: 22, background: "linear-gradient(145deg, rgba(255,255,255,0.96), rgba(242,238,228,0.88))", padding: 11, position: "relative", overflow: "hidden", border: "1px solid rgba(20,17,14,0.10)", boxShadow: "0 14px 30px rgba(20,17,14,0.07)" }}>
+        <div style={{ height: "100%", display: "flex", gap: 6 }}>
+          {blendCarts.map((cart, index) => {
+            const isFirst = index === 0;
+            const isLast = index === carts.length - 1;
+            return (
+              <div
+                key={cart.name}
+                style={{
+                  flex: Math.max(5, ratios[index] || 0),
+                  minWidth: 8,
+                  borderRadius: `${isFirst ? 8 : 4}px ${isLast ? 8 : 4}px ${isLast ? 8 : 4}px ${isFirst ? 8 : 4}px`,
+                  background: cart.color,
+                  opacity: 0.46,
+                  transition: "flex 0.35s ease, opacity 0.35s ease",
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   const SetupIcon = ({ id, done = false }) => {
     if (done) {
@@ -103,7 +157,7 @@ export function HomeScreen({
     </FadeIn>
   );
 
-  const liveMap = useMemo(() => getLiveOlfactiveMap(carts, ratios), [carts, ratios]);
+  const liveMap = useMemo(() => getLiveOlfactiveMap(blendCarts, ratios), [blendCarts, ratios]);
   const dominantLayer = useMemo(() => {
     if (!liveMap.length) return null;
     return [...liveMap].sort((a, b) => b.ratio - a.ratio)[0] || null;
@@ -117,12 +171,23 @@ export function HomeScreen({
       </FadeIn>
 
       <FadeIn delay={40}>
-        <Card style={{ padding: setupComplete ? 12 : 14, minHeight: setupComplete ? undefined : 132, position: "relative", background: "linear-gradient(135deg, #FFFFFF 0%, #F5F5F7 100%)" }}>
+        <Card
+          onClick={setupComplete && primaryMemory ? () => onOpenMemoryDetail(primaryMemory) : undefined}
+          role={setupComplete && primaryMemory ? "button" : undefined}
+          tabIndex={setupComplete && primaryMemory ? 0 : undefined}
+          onKeyDown={setupComplete && primaryMemory ? (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onOpenMemoryDetail(primaryMemory);
+            }
+          } : undefined}
+          style={{ padding: setupComplete ? 12 : 14, minHeight: setupComplete ? undefined : 132, position: "relative", background: "linear-gradient(135deg, #FFFFFF 0%, #F5F5F7 100%)", cursor: setupComplete && primaryMemory ? "pointer" : "default" }}
+        >
           <div style={{ display: "grid", gridTemplateColumns: setupComplete ? "76px 1fr" : "1fr 70px", gap: setupComplete ? 10 : 12, alignItems: "center" }}>
             {setupComplete ? (
               <>
-                <div style={{ height: 76, borderRadius: 16, overflow: "hidden", background: getMemoryArchiveBackground(displayMemory), filter: "saturate(0.9) contrast(0.98)", position: "relative" }}>
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08))" }} />
+                <div style={{ height: 76, borderRadius: 16, overflow: "hidden", background: getMemoryArchiveBackground(displayMemory), backgroundSize: "cover", backgroundPosition: displayMemory.image ? displayMemory.imagePosition || "center 50%" : "center", filter: displayMemory.image ? "saturate(1.04) contrast(1.02) brightness(1.02)" : "saturate(0.9) contrast(0.98)", position: "relative" }}>
+                  <div style={{ position: "absolute", inset: 0, background: displayMemory.image ? "linear-gradient(135deg, rgba(255,255,255,0.04), rgba(0,0,0,0.04))" : "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08))" }} />
                 </div>
                 <div style={{ minWidth: 0 }}>
                   <p style={{ ...T.eyebrow, fontSize: 10, color: "#B78A32", margin: 0 }}>Current Memory</p>
@@ -240,12 +305,12 @@ export function HomeScreen({
             <BatteryBadge level={batteryLevel} />
           </div>
 
-          <div style={{ marginTop: 14, display: "flex", justifyContent: "center" }}>
-            <LayeringDeviceFigure carts={carts} ratios={ratios} connected={connected} width={98} height={138} />
+          <div style={{ marginTop: 10, display: "flex", justifyContent: "center", alignItems: "center", minHeight: 106 }}>
+            <BlendRatioSquare />
           </div>
 
-          <div style={{ marginTop: 14, display: "grid", gap: 9 }}>
-            {carts.map((cart, index) => {
+          <div style={{ marginTop: 10, display: "grid", gap: 9 }}>
+            {blendCarts.map((cart, index) => {
               const layer = liveMap[index];
               return (
                 <div key={cart.name} style={{ borderRadius: 14, border: "1px solid rgba(17,17,17,0.10)", background: "#FFFFFF", padding: "10px 11px", display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
@@ -274,7 +339,7 @@ export function HomeScreen({
           </div>
           <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 12, border: "1px solid rgba(17,17,17,0.08)", background: "rgba(255,255,255,0.74)" }}>
             <div style={{ display: "flex", height: 4, borderRadius: 999, overflow: "hidden", background: "#ECECEF" }}>
-              {carts.map((c, i) => (
+              {blendCarts.map((c, i) => (
                 <div key={c.name} style={{ flex: ratios[i], background: c.color, transition: "flex 0.35s ease" }} />
               ))}
             </div>

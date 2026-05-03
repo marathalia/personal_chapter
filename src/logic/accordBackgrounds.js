@@ -107,6 +107,10 @@ export function getAccordPhotoBackground(accord) {
 }
 
 export function getMemoryArchiveBackground(memory) {
+  if (memory.image) {
+    return `linear-gradient(180deg, rgba(10,10,10,0.02), rgba(10,10,10,0.18)), url("${memory.image}")`;
+  }
+
   const text = `${memory.title || ""} ${memory.emotion || ""} ${memory.scent || ""}`.toLowerCase();
   if (text.includes("morning") || text.includes("linen") || text.includes("bed") || text.includes("soft")) {
     return "linear-gradient(180deg, rgba(10,10,10,0.08), rgba(10,10,10,0.32)), radial-gradient(ellipse at 28% 64%, rgba(255,255,255,0.7), transparent 30%), radial-gradient(ellipse at 72% 48%, rgba(180,180,180,0.62), transparent 28%), linear-gradient(135deg, #232323, #9A9A96 48%, #2D2D2B)";

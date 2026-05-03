@@ -233,11 +233,11 @@ export default function ReplicaApp() {
 
   const renderMain = () => {
     switch (activeTab) {
-      case "home": return <HomeScreen hasSkinID={hasSkinID} carts={deviceCarts} ratios={ratios} connected={connected} batteryLevel={batteryLevel} onRequestPairing={openPairingSheet} onAdjustRatio={handleAdjustRatio} onSprayBlend={handleSprayBlend} onOpenRatioAssistant={() => setRatioAssistantOpen(true)} onOpenStores={openStoreLocator} memories={memories} setupSteps={setupSteps} onOpenProgressStep={handleOpenProgressStep} onOpenProfile={() => switchTab("profile")} />;
+      case "home": return <HomeScreen hasSkinID={hasSkinID} carts={deviceCarts} ratios={ratios} connected={connected} batteryLevel={batteryLevel} onRequestPairing={openPairingSheet} onAdjustRatio={handleAdjustRatio} onSprayBlend={handleSprayBlend} onOpenRatioAssistant={() => setRatioAssistantOpen(true)} onOpenStores={openStoreLocator} memories={memories} setupSteps={setupSteps} onOpenProgressStep={handleOpenProgressStep} onOpenMemoryDetail={handleOpenMemoryDetail} onOpenProfile={() => switchTab("profile")} />;
       case "memory": return <MemoryScreen memories={memories} memoryPrompts={MEMORY_PROMPTS} accordLibrary={ACCORD_LIBRARY} onOpenMemoryComposer={openMemoryComposer} onOpenMemoryDetail={handleOpenMemoryDetail} />;
       case "explore": return <ExploreScreen hasSkinID={hasSkinID} hasProfileInput={hasProfileInput} accords={ACCORD_LIBRARY} onPreviewAccord={handlePreviewAccord} onModalChange={setExploreModalOpen} initialMode={exploreInitialMode} initialLabNames={labSeedNames} />;
-      case "profile": return <ProfileScreen hasSkinID={hasSkinID} hasProfileInput={hasProfileInput} onOpenStores={openStoreLocator} onStartProfile={startMemoryProfile} />;
-      default: return <HomeScreen hasSkinID={hasSkinID} carts={deviceCarts} ratios={ratios} connected={connected} batteryLevel={batteryLevel} onRequestPairing={openPairingSheet} onAdjustRatio={handleAdjustRatio} onSprayBlend={handleSprayBlend} onOpenRatioAssistant={() => setRatioAssistantOpen(true)} onOpenStores={openStoreLocator} memories={memories} setupSteps={setupSteps} onOpenProgressStep={handleOpenProgressStep} onOpenProfile={() => switchTab("profile")} />;
+      case "profile": return <ProfileScreen hasSkinID={hasSkinID} hasProfileInput={hasProfileInput} memories={memories} onOpenStores={openStoreLocator} onStartProfile={startMemoryProfile} />;
+      default: return <HomeScreen hasSkinID={hasSkinID} carts={deviceCarts} ratios={ratios} connected={connected} batteryLevel={batteryLevel} onRequestPairing={openPairingSheet} onAdjustRatio={handleAdjustRatio} onSprayBlend={handleSprayBlend} onOpenRatioAssistant={() => setRatioAssistantOpen(true)} onOpenStores={openStoreLocator} memories={memories} setupSteps={setupSteps} onOpenProgressStep={handleOpenProgressStep} onOpenMemoryDetail={handleOpenMemoryDetail} onOpenProfile={() => switchTab("profile")} />;
     }
   };
 

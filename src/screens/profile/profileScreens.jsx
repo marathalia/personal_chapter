@@ -4,7 +4,14 @@ import { STORE_LOCATIONS, SHOP_ITEMS } from "../../data/catalog.js";
 import { Btn, FadeIn, Glass, Label, ProfileStarterCard, StatusBar, StoreAccessCard, Title } from "../../components/appComponents.jsx";
 import skinprintScanDevice from "../../assets/skinprint-scan-device.png";
 
-export function ProfileScreen({ hasSkinID, hasProfileInput, onOpenStores, onStartProfile }) {
+export function ProfileScreen({ hasSkinID, hasProfileInput, memories = [], onOpenStores, onStartProfile }) {
+  const primaryMemory = memories[0];
+  const isPicnicProfile = primaryMemory?.title === "Picnic in Florence";
+  const startingProfileTitle = isPicnicProfile ? "Green / Soft Romantic" : "Warm / Soft Grounded";
+  const startingProfileCopy = isPicnicProfile
+    ? "Picnic in Florence started your profile with green shade, mandarin peel, white flowers, and clean skin musk. Complete Decode to add microbiome, pH, and wear data."
+    : "A memory has started your profile. Complete Decode to add microbiome, pH, and wear data.";
+
   return (
     <div style={{ padding: "0 24px", paddingTop: 16, paddingBottom: 90, overflowY: "auto", height: "100%" }}>
       <FadeIn delay={50}><Title>Profile</Title></FadeIn>
@@ -24,7 +31,7 @@ export function ProfileScreen({ hasSkinID, hasProfileInput, onOpenStores, onStar
                   {hasSkinID ? "Verified Scent ID" : "Starting Profile"}
                 </p>
                 <p style={{ ...T.sectionTitle, fontSize: 18, color: P.charcoal, margin: "7px 0 0", lineHeight: 1.2 }}>
-                  {hasSkinID ? "Amber / Clean Skin Musk" : "Warm / Soft Grounded"}
+                  {hasSkinID ? "Amber / Clean Skin Musk" : startingProfileTitle}
                 </p>
               </div>
               <span style={{ padding: "6px 10px", borderRadius: 999, background: hasSkinID ? "rgba(52,199,89,0.12)" : "rgba(17,17,17,0.06)", border: `1px solid ${hasSkinID ? "rgba(52,199,89,0.26)" : "rgba(17,17,17,0.12)"}`, ...T.chip, fontSize: 11, color: hasSkinID ? "#1F8C3A" : "#6E6E73", whiteSpace: "nowrap" }}>
@@ -35,7 +42,7 @@ export function ProfileScreen({ hasSkinID, hasProfileInput, onOpenStores, onStar
             <p style={{ fontFamily: sans, fontSize: 13, color: P.warmGray, margin: "12px 0 0", lineHeight: 1.55 }}>
               {hasSkinID
                 ? "Your biology and preferences are combined, so recommendations reflect real skin performance."
-                : "A memory has started your profile. Complete Decode to add microbiome, pH, and wear data."}
+                : startingProfileCopy}
             </p>
 
             {!hasSkinID && (

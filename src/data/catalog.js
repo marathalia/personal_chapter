@@ -1,20 +1,10 @@
 import { P } from "../theme.js";
+import picnicInFlorencePhoto from "../assets/picnic-in-florence.jpg";
+import lisbonSunrisePhoto from "../assets/lisbon-sunrise.jpg";
+import seoulMidnightPhoto from "../assets/seoul-midnight-blue.jpg";
+import marrakechSundayPhoto from "../assets/marrakech-sunday.webp";
 
 export const INITIAL_MEMORIES = [
-  {
-    id: "replica-lazy-sunday",
-    title: "Lazy Sunday Morning",
-    emotion: "Clean sheets, soft skin, morning light",
-    scent: "Replica scent: fresh linen, white musk, soft floral cotton",
-    grad: "linear-gradient(135deg, #D7D1C5, #F2EEE6)",
-    icon: "☁",
-    recommendedAccords: ["Clean Skin Musk", "White Floral", "Sandalwood Cream"],
-    breakdown: [
-      { name: "Clean Skin Musk", accord: 38, fit: 94, color: P.roseDust },
-      { name: "White Floral", accord: 32, fit: 89, color: P.blush },
-      { name: "Sandalwood Cream", accord: 20, fit: 86, color: P.gold },
-    ],
-  },
   {
     id: "replica-beach-walk",
     title: "Beach Walk",
@@ -89,9 +79,38 @@ export const INITIAL_MEMORIES = [
 
 export const DUMMY_UPLOAD_MEMORIES = [
   {
+    title: "Picnic in Florence",
+    emotion: "Green shade, checkered cloth, croissants, sunlight",
+    scent: "Crushed leaves, mandarin peel, white flowers, clean skin musk",
+    image: picnicInFlorencePhoto,
+    imagePosition: "center 34%",
+    detailImagePosition: "center 32%",
+    grad: "linear-gradient(135deg, #6F8355, #D8C08E)",
+    icon: "📸",
+    recommendedAccords: ["Green Mandarin", "Fig & Leaf", "White Floral", "Clean Skin Musk", "Bergamot Bright", "Sandalwood Cream"],
+    fitScores: {
+      "Green Mandarin": { memory: 95, skin: 88 },
+      "Fig & Leaf": { memory: 93, skin: 90 },
+      "White Floral": { memory: 90, skin: 94 },
+      "Clean Skin Musk": { memory: 87, skin: 96 },
+      "Bergamot Bright": { memory: 88, skin: 85 },
+      "Garden Rain": { memory: 84, skin: 82 },
+      "Honeyed Blossom": { memory: 82, skin: 86 },
+      "Sandalwood Cream": { memory: 78, skin: 91 },
+    },
+    breakdown: [
+      { name: "Green Mandarin", accord: 34, fit: 95, color: "#C2B65A" },
+      { name: "Fig & Leaf", accord: 30, fit: 93, color: P.sage },
+      { name: "Clean Skin Musk", accord: 24, fit: 96, color: P.roseDust },
+    ],
+  },
+  {
     title: "Sunset in Lisbon",
     emotion: "Golden light, Salt air, Warm skin",
     scent: "Orange peel, sea salt, warm amber, clean cotton",
+    image: lisbonSunrisePhoto,
+    imagePosition: "center 48%",
+    detailImagePosition: "center 47%",
     grad: "linear-gradient(135deg, #2D2D2D, #777777)",
     icon: "📸",
     breakdown: [
@@ -104,6 +123,9 @@ export const DUMMY_UPLOAD_MEMORIES = [
     title: "Midnight in Seoul",
     emotion: "Neon rain, Cool silk, City air",
     scent: "Black tea steam, rain-soaked pavement, soft skin musk",
+    image: seoulMidnightPhoto,
+    imagePosition: "center 54%",
+    detailImagePosition: "center 54%",
     grad: "linear-gradient(135deg, #59667A, #9EA7B2)",
     icon: "🌃",
     breakdown: [
@@ -116,6 +138,9 @@ export const DUMMY_UPLOAD_MEMORIES = [
     title: "Sunday in Marrakech",
     emotion: "Dry heat, Orange blossom, Spiced wind",
     scent: "Orange flower, saffron dust, cedar shade",
+    image: marrakechSundayPhoto,
+    imagePosition: "center 48%",
+    detailImagePosition: "center 48%",
     grad: "linear-gradient(135deg, #C68854, #E0B27D)",
     icon: "☀️",
     breakdown: [

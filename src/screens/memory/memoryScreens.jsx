@@ -119,9 +119,9 @@ export function MemoryScreen({ memories, memoryPrompts, accordLibrary, onOpenMem
                         onClick={() => onOpenMemoryDetail(m)}
                         style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", padding: 0, border: "none", background: "transparent", cursor: "pointer", textAlign: "left" }}
                       >
-                        <div style={{ height: 114, borderRadius: 12, background: getMemoryArchiveBackground(m), filter: "grayscale(1)", position: "relative", overflow: "hidden", flexShrink: 0 }}>
-                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.12))" }} />
-                          <div style={{ position: "absolute", inset: 0, opacity: 0.14, backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.28) 1px, transparent 1px)", backgroundSize: "34px 34px" }} />
+                        <div style={{ height: 114, borderRadius: 12, background: getMemoryArchiveBackground(m), backgroundSize: "cover", backgroundPosition: m.image ? m.imagePosition || "center 50%" : "center", filter: m.image ? "saturate(1.04) contrast(1.02) brightness(1.02)" : "grayscale(1)", position: "relative", overflow: "hidden", flexShrink: 0 }}>
+                          <div style={{ position: "absolute", inset: 0, background: m.image ? "linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04))" : "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.12))" }} />
+                          <div style={{ position: "absolute", inset: 0, opacity: m.image ? 0.04 : 0.14, backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.28) 1px, transparent 1px)", backgroundSize: "34px 34px" }} />
                         </div>
                         <div style={{ padding: "10px 7px 0", background: "#FFFFFF", flex: 1, minHeight: 0, overflow: "hidden" }}>
                           <p style={{ fontFamily: sans, fontSize: 10.2, fontWeight: 820, letterSpacing: 1.35, textTransform: "uppercase", color: P.charcoal, margin: 0, lineHeight: 1.12, maxHeight: 42, overflow: "hidden", wordBreak: "break-word", overflowWrap: "anywhere" }}>
@@ -233,10 +233,12 @@ export function MemoryDetailScreen({ memory, accordLibrary, hasSkinID, onBack, o
     .replace(/^Replica scent:\s*/i, "")
     .replace(/\s*·\s*/g, ", ");
   const isReplicaMemory = memory.id?.startsWith("replica-");
+  const isPhotoMemory = Boolean(memory.image);
   const replicaAnalysis = isReplicaMemory ? getReplicaMemoryWearAnalysis(memory, hasSkinID) : null;
   const scoredAccords = accords.map((accord, index) => {
-    const memoryFit = Math.max(64, Math.min(97, accord.match - index * 3 + (memoryTitle.length % 5)));
-    const skinFit = Math.max(58, Math.min(98, accord.match + (hasSkinID ? 5 : -2) - index));
+    const fitOverride = memory.fitScores?.[accord.name];
+    const memoryFit = fitOverride?.memory ?? Math.max(64, Math.min(97, accord.match - index * 3 + (memoryTitle.length % 5)));
+    const skinFit = fitOverride?.skin ?? Math.max(58, Math.min(98, accord.match + (hasSkinID ? 5 : -2) - index));
     return {
       accord,
       memoryFit,
@@ -245,21 +247,27 @@ export function MemoryDetailScreen({ memory, accordLibrary, hasSkinID, onBack, o
     };
   });
   const stageDefinitions = [
-    { id: "top", title: "Opening lift", label: "Top", subtitle: "The first impression", families: ["fresh-citrus", "fresh-green"] },
-    { id: "heart", title: "Emotional heart", label: "Heart", subtitle: "The part that carries the memory", families: ["floral", "gourmand", "warm-spice"] },
-    { id: "base", title: "Lasting base", label: "Base", subtitle: "What stays closest to skin", families: ["amber-oriental", "earthy-musk", "woody"] },
+    { id: "top", title: "Opening lift", label: "Top", layer: "Top", subtitle: "The first impression" },
+    { id: "heart", title: "Emotional heart", label: "Heart", layer: "Heart", subtitle: "The part that carries the memory" },
+    { id: "base", title: "Lasting base", label: "Base", layer: "Base", subtitle: "What stays closest to skin" },
   ];
   const accordGroups = stageDefinitions.map((group, groupIndex) => {
-    const grouped = scoredAccords.filter(({ accord }) => group.families.includes(accord.family));
+    const grouped = scoredAccords.filter(({ accord }) => accord.layer === group.layer);
     const fallback = scoredAccords.slice(groupIndex * 2, groupIndex * 2 + 3);
-    const sorted = (grouped.length ? grouped : fallback)
+    const pool = grouped.length ? grouped : fallback;
+    const memorySorted = pool
       .slice()
-      .sort((a, b) => hasSkinID ? b.scentIdFit - a.scentIdFit : b.memoryFit - a.memoryFit);
+      .sort((a, b) => b.memoryFit - a.memoryFit)
+      .slice(0, 3);
+    const skinSorted = pool
+      .slice()
+      .sort((a, b) => b.scentIdFit - a.scentIdFit)
+      .slice(0, memorySorted.length);
     return {
       ...group,
-      bestPick: sorted[0] || null,
-      picks: sorted.slice(0, 3),
-      otherPicks: sorted.slice(1, 4),
+      bestPick: skinSorted[0] || null,
+      picks: memorySorted,
+      otherPicks: skinSorted.slice(1),
     };
   });
   const totalMatches = accordGroups.reduce((sum, group) => sum + (hasSkinID ? (group.bestPick ? 1 : 0) + group.otherPicks.length : group.picks.length), 0);
@@ -325,9 +333,9 @@ export function MemoryDetailScreen({ memory, accordLibrary, hasSkinID, onBack, o
 
       <FadeIn delay={40}>
         <div style={{ marginTop: 14, borderRadius: 28, overflow: "hidden", background: "#FFFFFF", border: `1px solid ${P.glassBorder}`, boxShadow: "0 18px 42px rgba(20,17,14,0.08)" }}>
-          <div style={{ height: 170, background: getMemoryArchiveBackground(memory), filter: "grayscale(1)", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.3))" }} />
-            <div style={{ position: "absolute", inset: 0, opacity: 0.16, backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.28) 1px, transparent 1px)", backgroundSize: "34px 34px" }} />
+          <div style={{ height: 170, background: getMemoryArchiveBackground(memory), backgroundSize: "cover", backgroundPosition: isPhotoMemory ? memory.detailImagePosition || memory.imagePosition || "center 50%" : "center", filter: isPhotoMemory ? "saturate(1.04) contrast(1.03) brightness(1.03)" : "grayscale(1)", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", inset: 0, background: isPhotoMemory ? "linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.08))" : "linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.3))" }} />
+            <div style={{ position: "absolute", inset: 0, opacity: isPhotoMemory ? 0.04 : 0.16, backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.28) 1px, transparent 1px)", backgroundSize: "34px 34px" }} />
           </div>
           <div style={{ padding: "18px 18px 20px" }}>
             <p style={{ ...T.eyebrow, color: P.gold, margin: 0 }}>

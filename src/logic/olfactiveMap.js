@@ -10,6 +10,11 @@ export function getLiveOlfactiveMap(carts, ratios) {
     "Warm Amber": { notes: "Amber resin", effect: "warmth rises on skin" },
     "Clean Skin Musk": { notes: "Skin musk", effect: "keeps the blend close" },
     "Fig & Leaf": { notes: "Fig leaf", effect: "adds green lift" },
+    "White Floral": { notes: "White flowers", effect: "adds soft bloom" },
+    "Sandalwood Cream": { notes: "Creamy sandalwood", effect: "smooths the dry-down" },
+    "Green Mandarin": { notes: "Green citrus", effect: "brightens the opening" },
+    "Bergamot Bright": { notes: "Bergamot zest", effect: "adds clean sparkle" },
+    "Garden Rain": { notes: "Rainy greens", effect: "keeps it fresh" },
     "Skin Musk": { notes: "Skin musk", effect: "softens the dry-down" },
     "Fig Leaf": { notes: "Fig leaf", effect: "adds green lift" },
   };
